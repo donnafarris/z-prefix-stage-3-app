@@ -6,7 +6,7 @@ services:
     environment:
       - POSTGRES_USER=admin
       - POSTGRES_PASSWORD=admin
-      - POSTGRES_DB=crud-test
+      - POSTGRES_DB=z-prefix
     ports:
       - '5432:5432'
     restart: always
@@ -21,4 +21,4 @@ services:
       - "database"
 
 volumes:
-  crud-test: {}
+  z-prefix: {}
