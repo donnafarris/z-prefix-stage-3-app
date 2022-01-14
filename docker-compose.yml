@@ -1,0 +1,24 @@
+services:
+  database:
+    image: postgres:alpine
+    volumes:
+      - ./server/database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=crud-test
+    ports:
+      - '5432:5432'
+    restart: always
+
+  api:
+    build: server/api
+    volumes:
+      - ./server/api:/server
+    ports:
+      - 3001:3001
+    depends_on:
+      - "database"
+
+volumes:
+  crud-test: {}
