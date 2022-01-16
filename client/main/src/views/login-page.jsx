@@ -47,7 +47,7 @@ export default function LoginForm(props) {
     if (checkBtn.current.context._errors.length === 0) {
       AuthService.login(username, password).then(
         () => {
-          props.history.push("/");
+          history.push("/");
           window.location.reload();
         },
         (error) => {
@@ -71,7 +71,7 @@ export default function LoginForm(props) {
     <div id="loginPage">
       <h4>Log in to view your posts:</h4>
 
-      <Form ref={form}>
+      <Form ref={form} onSubmit={handleLogin}>
         <div>
           <label htmlFor="username">Username </label>
           <Input

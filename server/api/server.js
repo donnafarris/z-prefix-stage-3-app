@@ -44,7 +44,7 @@ app.get("/", (req, res) => {
 });
 
 // POST | INSERT
-app.post("/users", async (req, res) => {
+app.post("/signup", async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     pool.query(
@@ -58,14 +58,14 @@ app.post("/users", async (req, res) => {
       (error, results) => {
         if (error) {
           console.error(error.stack);
-          res.status(400).send();
+          res.status(400).send({ message: error.message });
         }
-        res.status(200).json(results.rows);
+        res.status(200).send({ message: "User was registered successfully!" });
       }
     );
   } catch (err) {
     console.error(err.message);
-    res.status(500).send();
+    res.status(500).send({ message: err.message });
   }
 });
 
@@ -220,11 +220,14 @@ app.post("/login", async (req, res) => {
       [req.body.username]
     );
     const user = rows[0];
+    if (!user) {
+      res.status(404).send({ message: "User does not exist." })
+    }
     if (await bcrypt.compare(req.body.password, user["password"])) {
       const accessToken = generateAccessToken(user);
       // const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
       // res.json({ accessToken: accessToken, refreshToken: refreshToken });
-      res.json({ accessToken: accessToken });
+      res.status(200).send({ username: user.username, accessToken: accessToken });
     } else {
       res.sendStatus(401);
     }

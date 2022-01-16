@@ -2,7 +2,14 @@ import axios from "axios";
 
 const API_URL = "http://localhost:3001/";
 
-//create a signup option
+const signup = (username, password, first_name, last_name) => {
+  return axios.post(API_URL + "signup", {
+    username,
+    password,
+    first_name,
+    last_name,
+  });
+};
 
 const login = (username, password) => {
   return axios
@@ -28,6 +35,7 @@ const getCurrentUser = () => {
 };
 
 export default {
+  signup,
   login,
   logout,
   getCurrentUser,
