@@ -44,7 +44,7 @@ app.post("/signup", async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     pool.query(
-      "INSERT INTO Users (First_Name, Last_Name, Username, Password) VALUES ($1, $2, $3, $4)",
+      "INSERT INTO Users (First_Name, Last_Name, Username, Password) VALUES ($1, $2, $3, $4) RETURNING Username",
       [
         req.body.first_name,
         req.body.last_name,
@@ -53,10 +53,10 @@ app.post("/signup", async (req, res) => {
       ],
       (error, results) => {
         if (error) {
-          console.error(error.stack);
           res.status(400).send({ message: error.message });
         }
-        res.status(200).send({ message: "User was registered successfully!" });
+        let user = results.rows[0]["username"];
+        res.status(200).send({ message: `${user} was registered successfully!` });
       }
     );
   } catch (err) {
@@ -69,9 +69,9 @@ app.post("/signup", async (req, res) => {
 // Get all Users
 app.get("/users", authenticateToken, (req, res) => {
   if (req.user.username == "Admin") {
-    pool.query("SELECT * FROM Users", (error, results) => {
+    pool.query("SELECT User_ID, First_Name, Last_Name, Username FROM Users", (error, results) => {
       if (error) {
-        console.log(error.stack);
+        res.send({ message: error.message });
       }
       res.status(200).json(results.rows);
     });
@@ -90,7 +90,7 @@ app.get("/users/:user_name", authenticateToken, (req, res) => {
       [user_name],
       (error, results) => {
         if (error) {
-          console.log(error.stack);
+          res.send({ message: error.message });
         }
         res.status(200).json(results.rows);
       }
@@ -104,10 +104,10 @@ app.get("/users/:user_name", authenticateToken, (req, res) => {
 // Get all Posts
 app.get("/posts", (req, res) => {
   pool.query(
-    "SELECT * FROM Posts INNER JOIN Users ON Posts.Author = Users.User_ID",
+    "SELECT Posts.Post_ID, Posts.Creation_Date, Posts.Title, Posts.Content, Users.Username, Users.First_Name, Users.Last_Name FROM Posts INNER JOIN Users ON Posts.Author = Users.User_ID",
     (error, results) => {
       if (error) {
-        console.log(error.stack);
+        res.send({ message: error.message });
       }
       res.status(200).json(results.rows);
     }
@@ -119,11 +119,11 @@ app.get("/posts", (req, res) => {
 app.get("/posts/:id", (req, res) => {
   const post_id = req.params.id;
   pool.query(
-    "SELECT * FROM Posts INNER JOIN Users ON Posts.Author = Users.User_ID WHERE Posts.Post_ID = $1",
+    "SELECT Posts.Post_ID, Posts.Creation_Date, Posts.Title, Posts.Content, Users.Username, Users.First_Name, Users.Last_Name FROM Posts INNER JOIN Users ON Posts.Author = Users.User_ID WHERE Posts.Post_ID = $1",
     [post_id],
     (error, results) => {
       if (error) {
-        console.log(error.stack);
+        res.send({ message: error.message });
       }
       res.status(200).json(results.rows);
     }
@@ -134,7 +134,7 @@ app.get("/posts/:id", (req, res) => {
 // Get all Posts by Current User
 app.get("/my-posts", authenticateToken, (req, res) => {
   pool.query(
-    "SELECT * FROM Posts INNER JOIN Users ON Posts.Author = Users.User_ID WHERE Users.Username = $1",
+    "SELECT Posts.Post_ID, Posts.Creation_Date, Posts.Title, Posts.Content, Users.Username, Users.First_Name, Users.Last_Name FROM Posts INNER JOIN Users ON Posts.Author = Users.User_ID WHERE Users.Username = $1",
     [req.user.username],
     (error, results) => {
       if (error) {
@@ -167,13 +167,13 @@ app.post("/create-post", authenticateToken, async (req, res) => {
       [date, user["user_id"], req.body.title, req.body.content],
       (error, results) => {
         if (error) {
-          console.log(error.stack);
           res.status(500).send({ message: error.message });
         }
         res.status(200).json(results.rows);
       }
     );
   } catch (err) {
+    res.send({ message: error.message });
     console.error(err.message);
   }
 });
@@ -186,12 +186,11 @@ app.post("/posts/:id/update", authenticateToken, async (req, res) => {
   ]);
   let user = rows[0];
   pool.query(
-    "UPDATE Posts SET Title = $1, Content = $2 WHERE Post_ID = $3 AND Author = $4",
+    "UPDATE Posts SET Title = $1, Content = $2 WHERE Post_ID = $3 AND Author = $4 RETURNING *",
     [req.body.title, req.body.content, req.params.id, user["user_id"]],
     (error, results) => {
       if (error) {
-        console.error(error.stack);
-        res.status(500).send("An error occurred.");
+        res.status(500).send({ message: "An error occurred." });
       }
       res.status(200).json(results.rows);
     }
@@ -210,10 +209,9 @@ app.delete("/posts/:id/delete", authenticateToken, async (req, res) => {
     [req.params.id, user["user_id"]],
     (error, results) => {
       if (error) {
-        console.error(error.stack);
-        res.status(500).send("An error occurred.");
+        res.status(500).send({ message: "An error occurred." });
       }
-      res.status(200).json(results.rows);
+      res.status(200).send({ message: "The post was deleted." });
     }
   );
 });
