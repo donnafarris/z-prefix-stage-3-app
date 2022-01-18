@@ -69,15 +69,12 @@ app.post("/signup", async (req, res) => {
 // Get all Users
 app.get("/users", authenticateToken, (req, res) => {
   if (req.user.username == "Admin") {
-    pool.query(
-      "SELECT * FROM Users",
-      (error, results) => {
-        if (error) {
-          console.log(error.stack);
-        }
-        res.status(200).json(results.rows);
+    pool.query("SELECT * FROM Users", (error, results) => {
+      if (error) {
+        console.log(error.stack);
       }
-    );
+      res.status(200).json(results.rows);
+    });
   } else {
     res.status(403).send();
   }
@@ -141,7 +138,7 @@ app.get("/my-posts", authenticateToken, (req, res) => {
     [req.user.username],
     (error, results) => {
       if (error) {
-        res.send({ message: error.message })
+        res.send({ message: error.message });
       }
       res.status(200).json(results.rows);
     }
@@ -151,29 +148,34 @@ app.get("/my-posts", authenticateToken, (req, res) => {
 // POST | INSERT
 // Create a Post
 app.post("/create-post", authenticateToken, async (req, res) => {
-  const { rows } = await pool.query("SELECT * FROM Users WHERE Username = $1", [
-    req.user.username,
-  ]);
-  let user = rows[0];
-  let today = new Date();
-  let dd = today.getDate() < 10 ? "0" + today.getDate() : today.getDate();
-  let mm =
-    today.getMonth() + 1 < 10
-      ? "0" + (today.getMonth() + 1)
-      : today.getMonth() + 1;
-  let yyyy = today.getFullYear();
-  let date = `${yyyy}-${mm}-${dd}`;
-  pool.query(
-    "INSERT INTO Posts (Creation_Date, Author, Title, Content) VALUES ($1, $2, $3, $4)",
-    [date, user["user_id"], req.body.title, req.body.content],
-    (error, results) => {
-      if (error) {
-        console.log(error.stack);
-        res.status(500).send({ message: error.message });
+  try {
+    const { rows } = await pool.query(
+      "SELECT * FROM Users WHERE Username = $1",
+      [req.user.username]
+    );
+    let user = rows[0];
+    let today = new Date();
+    let dd = today.getDate() < 10 ? "0" + today.getDate() : today.getDate();
+    let mm =
+      today.getMonth() + 1 < 10
+        ? "0" + (today.getMonth() + 1)
+        : today.getMonth() + 1;
+    let yyyy = today.getFullYear();
+    let date = `${yyyy}-${mm}-${dd}`;
+    pool.query(
+      "INSERT INTO Posts (Creation_Date, Author, Title, Content) VALUES ($1, $2, $3, $4) RETURNING *",
+      [date, user["user_id"], req.body.title, req.body.content],
+      (error, results) => {
+        if (error) {
+          console.log(error.stack);
+          res.status(500).send({ message: error.message });
+        }
+        res.status(200).json(results.rows);
       }
-      res.status(200).json(results.rows);
-    }
-  );
+    );
+  } catch (err) {
+    console.error(err.message);
+  }
 });
 
 // POST | UPDATE
@@ -223,18 +225,22 @@ app.post("/login", async (req, res) => {
       "SELECT Username, Password FROM Users WHERE Username = $1",
       [req.body.username]
     );
-    const user = rows[0];
-    if (!user) {
-      res.status(404).send({ message: "User does not exist." })
-    }
-    if (await bcrypt.compare(req.body.password, user["password"])) {
+    const user = rows[0] && rows[0]["password"] ? rows[0] : null;
+    if (
+      user !== null &&
+      (await bcrypt.compare(req.body.password, user["password"]))
+    ) {
       const accessToken = generateAccessToken(user);
-      res.status(200).send({ username: user.username, accessToken: accessToken });
+      res
+        .status(200)
+        .send({ username: user["username"], accessToken: accessToken });
+    } else if (user == null) {
+      res.status(404).send({ message: "User does not exist." });
     } else {
       res.sendStatus(401);
     }
-  } catch {
-    res.status(500).send();
+  } catch (err) {
+    res.status(500).send({ message: err.message });
   }
 });
 
