@@ -73,3 +73,6 @@ dist
 
 # Rest Files
 *.rest
+
+# Old Client Folder
+ignore-client/

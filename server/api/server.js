@@ -1,9 +1,4 @@
 require("dotenv").config();
-
-/*
-Server Set-Up
-*/
-
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
@@ -44,6 +39,7 @@ app.get("/", (req, res) => {
 });
 
 // POST | INSERT
+// Create a User
 app.post("/signup", async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -70,10 +66,11 @@ app.post("/signup", async (req, res) => {
 });
 
 // GET | SELECT
+// Get all Users
 app.get("/users", authenticateToken, (req, res) => {
   if (req.user.username == "Admin") {
     pool.query(
-      "SELECT First_Name, Last_Name, Username FROM Users",
+      "SELECT * FROM Users",
       (error, results) => {
         if (error) {
           console.log(error.stack);
@@ -87,6 +84,7 @@ app.get("/users", authenticateToken, (req, res) => {
 });
 
 // GET | SELECT
+// Get a User
 app.get("/users/:user_name", authenticateToken, (req, res) => {
   const { user_name } = req.params;
   if (req.user.username == "Admin" || req.user.username == user_name) {
@@ -106,9 +104,10 @@ app.get("/users/:user_name", authenticateToken, (req, res) => {
 });
 
 // GET | SELECT
+// Get all Posts
 app.get("/posts", (req, res) => {
   pool.query(
-    "SELECT Posts.Creation_Date, Posts.Title, Posts.Content, Users.Username FROM Posts INNER JOIN Users ON Posts.Author = Users.User_ID",
+    "SELECT * FROM Posts INNER JOIN Users ON Posts.Author = Users.User_ID",
     (error, results) => {
       if (error) {
         console.log(error.stack);
@@ -119,10 +118,11 @@ app.get("/posts", (req, res) => {
 });
 
 // GET | SELECT
+// Get a Post
 app.get("/posts/:id", (req, res) => {
   const post_id = req.params.id;
   pool.query(
-    "SELECT Posts.Creation_Date, Posts.Title, Posts.Content, Users.Username FROM Posts INNER JOIN Users ON Posts.Author = Users.User_ID WHERE Posts.Post_ID = $1",
+    "SELECT * FROM Posts INNER JOIN Users ON Posts.Author = Users.User_ID WHERE Posts.Post_ID = $1",
     [post_id],
     (error, results) => {
       if (error) {
@@ -134,13 +134,14 @@ app.get("/posts/:id", (req, res) => {
 });
 
 // GET | SELECT
+// Get all Posts by Current User
 app.get("/my-posts", authenticateToken, (req, res) => {
   pool.query(
-    "SELECT Posts.Creation_Date, Posts.Title, Posts.Content, Users.Username FROM Posts INNER JOIN Users ON Posts.Author = Users.User_ID WHERE Users.Username = $1",
+    "SELECT * FROM Posts INNER JOIN Users ON Posts.Author = Users.User_ID WHERE Users.Username = $1",
     [req.user.username],
     (error, results) => {
       if (error) {
-        console.log(error.stack);
+        res.send({ message: error.message })
       }
       res.status(200).json(results.rows);
     }
@@ -148,7 +149,8 @@ app.get("/my-posts", authenticateToken, (req, res) => {
 });
 
 // POST | INSERT
-app.post("/my-posts", authenticateToken, async (req, res) => {
+// Create a Post
+app.post("/create-post", authenticateToken, async (req, res) => {
   const { rows } = await pool.query("SELECT * FROM Users WHERE Username = $1", [
     req.user.username,
   ]);
@@ -167,7 +169,7 @@ app.post("/my-posts", authenticateToken, async (req, res) => {
     (error, results) => {
       if (error) {
         console.log(error.stack);
-        res.status(500).send("An error occurred.");
+        res.status(500).send({ message: error.message });
       }
       res.status(200).json(results.rows);
     }
@@ -175,6 +177,7 @@ app.post("/my-posts", authenticateToken, async (req, res) => {
 });
 
 // POST | UPDATE
+// Update a Post
 app.post("/posts/:id/update", authenticateToken, async (req, res) => {
   const { rows } = await pool.query("SELECT * FROM Users WHERE Username = $1", [
     req.user.username,
@@ -194,7 +197,8 @@ app.post("/posts/:id/update", authenticateToken, async (req, res) => {
 });
 
 // POST | DELETE
-app.delete("/posts/:id/update", authenticateToken, async (req, res) => {
+// Delete a Post
+app.delete("/posts/:id/delete", authenticateToken, async (req, res) => {
   const { rows } = await pool.query("SELECT * FROM Users WHERE Username = $1", [
     req.user.username,
   ]);
@@ -212,7 +216,7 @@ app.delete("/posts/:id/update", authenticateToken, async (req, res) => {
   );
 });
 
-// POST
+// Authentication
 app.post("/login", async (req, res) => {
   try {
     const { rows } = await pool.query(
@@ -225,8 +229,6 @@ app.post("/login", async (req, res) => {
     }
     if (await bcrypt.compare(req.body.password, user["password"])) {
       const accessToken = generateAccessToken(user);
-      // const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET);
-      // res.json({ accessToken: accessToken, refreshToken: refreshToken });
       res.status(200).send({ username: user.username, accessToken: accessToken });
     } else {
       res.sendStatus(401);
