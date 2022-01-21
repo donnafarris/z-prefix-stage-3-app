@@ -56,7 +56,9 @@ app.post("/signup", async (req, res) => {
           res.status(400).send({ message: error.message });
         }
         let user = results.rows[0]["username"];
-        res.status(200).send({ message: `${user} was registered successfully!` });
+        res
+          .status(200)
+          .send({ message: `${user} was registered successfully!` });
       }
     );
   } catch (err) {
@@ -69,19 +71,22 @@ app.post("/signup", async (req, res) => {
 // Get all Users
 app.get("/users", authenticateToken, (req, res) => {
   if (req.user.username == "Admin") {
-    pool.query("SELECT User_ID, First_Name, Last_Name, Username FROM Users", (error, results) => {
-      if (error) {
-        res.send({ message: error.message });
+    pool.query(
+      "SELECT User_ID, First_Name, Last_Name, Username FROM Users",
+      (error, results) => {
+        if (error) {
+          res.send({ message: error.message });
+        }
+        res.status(200).json(results.rows);
       }
-      res.status(200).json(results.rows);
-    });
+    );
   } else {
     res.status(403).send();
   }
 });
 
 // GET | SELECT
-// Get a User
+// Get a User by Username
 app.get("/users/:user_name", authenticateToken, (req, res) => {
   const { user_name } = req.params;
   if (req.user.username == "Admin" || req.user.username == user_name) {
@@ -92,7 +97,7 @@ app.get("/users/:user_name", authenticateToken, (req, res) => {
         if (error) {
           res.send({ message: error.message });
         }
-        res.status(200).json(results.rows);
+        res.status(200).json(results.rows[0]);
       }
     );
   } else {
@@ -115,7 +120,7 @@ app.get("/posts", (req, res) => {
 });
 
 // GET | SELECT
-// Get a Post
+// Get a Post by ID
 app.get("/posts/:id", (req, res) => {
   const post_id = req.params.id;
   pool.query(
@@ -125,7 +130,7 @@ app.get("/posts/:id", (req, res) => {
       if (error) {
         res.send({ message: error.message });
       }
-      res.status(200).json(results.rows);
+      res.status(200).json(results.rows[0]);
     }
   );
 });
@@ -145,9 +150,25 @@ app.get("/my-posts", authenticateToken, (req, res) => {
   );
 });
 
+// GET | SELECT
+// Get all Posts by a User
+app.get("/:username/posts", (req, res) => {
+  const { user_name } = req.params;
+  pool.query(
+    "SELECT Posts.Post_ID, Posts.Creation_Date, Posts.Title, Posts.Content, Users.Username, Users.First_Name, Users.Last_Name FROM Posts INNER JOIN Users ON Posts.Author = Users.User_ID WHERE Users.Username = $1",
+    [user_name],
+    (error, results) => {
+      if (error) {
+        res.send({ message: error.message });
+      }
+      res.status(200).json(results.rows);
+    }
+  );
+});
+
 // POST | INSERT
 // Create a Post
-app.post("/create-post", authenticateToken, async (req, res) => {
+app.post("/posts", authenticateToken, async (req, res) => {
   try {
     const { rows } = await pool.query(
       "SELECT * FROM Users WHERE Username = $1",
@@ -169,7 +190,7 @@ app.post("/create-post", authenticateToken, async (req, res) => {
         if (error) {
           res.status(500).send({ message: error.message });
         }
-        res.status(200).json(results.rows);
+        res.status(200).json(results.rows[0]);
       }
     );
   } catch (err) {
@@ -178,9 +199,9 @@ app.post("/create-post", authenticateToken, async (req, res) => {
   }
 });
 
-// POST | UPDATE
+// PUT | UPDATE
 // Update a Post
-app.post("/posts/:id/update", authenticateToken, async (req, res) => {
+app.put("/posts/:id", authenticateToken, async (req, res) => {
   const { rows } = await pool.query("SELECT * FROM Users WHERE Username = $1", [
     req.user.username,
   ]);
@@ -192,14 +213,14 @@ app.post("/posts/:id/update", authenticateToken, async (req, res) => {
       if (error) {
         res.status(500).send({ message: "An error occurred." });
       }
-      res.status(200).json(results.rows);
+      res.status(200).json(results.rows[0]);
     }
   );
 });
 
 // POST | DELETE
 // Delete a Post
-app.delete("/posts/:id/delete", authenticateToken, async (req, res) => {
+app.delete("/posts/:id", authenticateToken, async (req, res) => {
   const { rows } = await pool.query("SELECT * FROM Users WHERE Username = $1", [
     req.user.username,
   ]);
@@ -243,7 +264,7 @@ app.post("/login", async (req, res) => {
 });
 
 function generateAccessToken(user) {
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 86400 });
+  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 21600 });
 }
 
 function authenticateToken(req, res, next) {
