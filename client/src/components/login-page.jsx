@@ -116,7 +116,7 @@ export default function LoginForm() {
             {errors.password}
           </Form.Control.Feedback>
         </Form.Group>
-        <Button type="submit" disabled={loading}>
+        <Button type="submit" variant="dark" disabled={loading}>
           {loading ? "Loading" : "Log In"}
         </Button>
       </Form>

@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 import { createBrowserHistory } from "history";
-import { Alert, Button, Container, FloatingLabel, Form } from "react-bootstrap";
+import {
+  Alert,
+  Button,
+  Container,
+  Row,
+  Col,
+  Form,
+} from "react-bootstrap";
 
 const history = createBrowserHistory();
 
@@ -70,7 +77,12 @@ export default function NewPostForm() {
   };
 
   return (
-    <Container>
+    <Container fluid>
+      <Row style={{ backgroundColor: "gainsboro" }}>
+        <Col md="auto">
+          <h4 className="display-6">New Post</h4>
+        </Col>
+      </Row>
       {serverError && (
         <Alert
           variant="danger"
@@ -81,43 +93,46 @@ export default function NewPostForm() {
           <p>{serverError}</p>
         </Alert>
       )}
-      <Form noValidate validated={valid} onSubmit={handleSubmit} className="row gy-5 align-self-center">
-        <Form.Group>
-          <FloatingLabel controlId="titleTextarea" label="Title">
-            <Form.Control
-              required
-              className="form-field"
-              as="textarea"
-              placeholder="Title"
-              name="titleTextarea"
-              value={titleF}
-              onChange={onChangeTitleF}
-              isInvalid={!!errors.titleF}
-            />
-          </FloatingLabel>
+      <Form
+        noValidate
+        validated={valid}
+        onSubmit={handleSubmit}
+        className="g-4 mt-2 px-4"
+      >
+        <Form.Group className="mb-3" controlId="titleText">
+          <Form.Label label="Title"></Form.Label>
+          <Form.Control
+            required
+            size="lg"
+            type="text"
+            placeholder="Title"
+            name="titleTextarea"
+            value={titleF}
+            onChange={onChangeTitleF}
+            isInvalid={!!errors.titleF}
+          />
           <Form.Control.Feedback type="invalid">
             {errors.titleF}
           </Form.Control.Feedback>
         </Form.Group>
-        <Form.Group>
-          <FloatingLabel controlId="contentTextarea" label="Content">
-            <Form.Control
-              required
-              className="form-field"
-              as="textarea"
-              placeholder="Content"
-              name="contentTextarea"
-              value={contentF}
-              onChange={onChangecontentF}
-              isInvalid={!!errors.contentF}
-              style={{ height: "100px" }}
-            />
-          </FloatingLabel>
+        <Form.Group className="mb-3" controlId="contentTextarea">
+          <Form.Label label="Content"></Form.Label>
+          <Form.Control
+            required
+            className="form-field"
+            as="textarea"
+            placeholder="Content"
+            name="contentTextarea"
+            value={contentF}
+            onChange={onChangecontentF}
+            isInvalid={!!errors.contentF}
+            style={{ height: "100px" }}
+          />
           <Form.Control.Feedback type="invalid">
             {errors.contentF}
           </Form.Control.Feedback>
         </Form.Group>
-        <Button type="submit" disabled={loading}>
+        <Button type="submit" variant="dark" disabled={loading}>
           {loading ? "Loading" : "Submit"}
         </Button>
       </Form>

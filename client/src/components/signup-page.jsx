@@ -226,7 +226,7 @@ export default function SignupForm() {
             {errors.confirm_password}
           </Form.Control.Feedback>
         </Form.Group>
-        <Button type="submit" disabled={loading}>
+        <Button type="submit" variant="dark" disabled={loading}>
           {loading ? "Loading" : "Sign Up"}
         </Button>
       </Form>
