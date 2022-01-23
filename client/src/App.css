@@ -37,7 +37,7 @@
   }
 }
 
-.close{
+.close {
   /*background-color: red; */
   visibility: hidden;
   position: absolute;
@@ -55,7 +55,7 @@
 .btn.btn-outline-dark {
   border-color: transparent;
   background-color: transparent;
-  color: inherit
+  color: inherit;
 }
 
 .dropdown-toggle.btn.btn-outline-dark.btn-sm {
@@ -64,5 +64,5 @@
 
 .dropdown-toggle.btn.btn-outline-dark:hover {
   background-color: transparent;
-  color: inherit
+  color: inherit;
 }

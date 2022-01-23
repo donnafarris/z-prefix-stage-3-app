@@ -19,7 +19,9 @@ const UserHomePage = () => {
   useEffect(() => {
     const getBlogger = async () => {
       try {
-        const response = await fetch("https://z-prefix-stage-3-api.herokuapp.com/api/users");
+        const response = await fetch(
+          "https://z-prefix-stage-3-api.herokuapp.com/api/users"
+        );
         const jsonData = await response.json();
         const data = jsonData.filter((user) => {
           return user.username === username;
@@ -36,7 +38,9 @@ const UserHomePage = () => {
   useEffect(() => {
     const getPosts = async () => {
       try {
-        const response = await fetch("https://z-prefix-stage-3-api.herokuapp.com/api/posts");
+        const response = await fetch(
+          "https://z-prefix-stage-3-api.herokuapp.com/api/posts"
+        );
         const jsonData = await response.json();
         const data = jsonData.filter((post) => {
           return post.username === blogger.username;
@@ -75,10 +79,7 @@ const UserHomePage = () => {
       <Row xs={1} md={2} className="g-4 mt-2 px-4">
         {posts.map((post) => (
           <Col key={`postid${post.post_id}${post.username}`}>
-            <Card
-              style={{ minWidth: "min-content" }}
-              className="m-2"
-            >
+            <Card style={{ minWidth: "min-content" }} className="m-2">
               <Card.Header>
                 <Card.Title>
                   {post.title.length > 100
@@ -99,7 +100,9 @@ const UserHomePage = () => {
                       <a href={`/blog/${post.username}`}>{post.username}</a>
                     </div>
                   </Col>
-                  <Col className="flex-grow-1">{"Created:  " + dateFunc(post.creation_date)}</Col>
+                  <Col className="flex-grow-1">
+                    {"Created:  " + dateFunc(post.creation_date)}
+                  </Col>
                   <Col xs="auto">
                     <OverlayTrigger
                       placement="top"

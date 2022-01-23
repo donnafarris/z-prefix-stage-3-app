@@ -23,7 +23,7 @@ export default function App() {
         <Route path="/posts/:id" element={<PostPage />} />
         <Route path="/new-post" element={<NewPostForm />} />
       </Routes>
-      <Footer/>
+      <Footer />
     </Router>
   );
 }

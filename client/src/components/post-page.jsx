@@ -44,7 +44,9 @@ const PostPage = () => {
   useEffect(() => {
     const getPost = async () => {
       try {
-        await fetch(`https://z-prefix-stage-3-api.herokuapp.com/api/posts/${id}`)
+        await fetch(
+          `https://z-prefix-stage-3-api.herokuapp.com/api/posts/${id}`
+        )
           .then((resp) => resp.json())
           .then((data) => {
             const textRowCount = data["content"].split(".").length;
@@ -123,14 +125,17 @@ const PostPage = () => {
     setLoading(true);
     setShowModal(false);
     try {
-      const response = await fetch(`https://z-prefix-stage-3-api.herokuapp.com/api/posts/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${
-            JSON.parse(localStorage.getItem("user")).accessToken
-          }`,
-        },
-      });
+      const response = await fetch(
+        `https://z-prefix-stage-3-api.herokuapp.com/api/posts/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${
+              JSON.parse(localStorage.getItem("user")).accessToken
+            }`,
+          },
+        }
+      );
       if (!response.ok) setServerError(response.statusText);
       if (response.ok) {
         history.push(
@@ -156,16 +161,19 @@ const PostPage = () => {
       setValid(true);
       try {
         const body = { title: newTitle, content: newContent };
-        const response = await fetch(`https://z-prefix-stage-3-api.herokuapp.com/api/posts/${id}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${
-              JSON.parse(localStorage.getItem("user")).accessToken
-            }`,
-          },
-          body: JSON.stringify(body),
-        });
+        const response = await fetch(
+          `https://z-prefix-stage-3-api.herokuapp.com/api/posts/${id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${
+                JSON.parse(localStorage.getItem("user")).accessToken
+              }`,
+            },
+            body: JSON.stringify(body),
+          }
+        );
         if (!response.ok) setServerError(response.statusText);
         if (response.ok) {
           window.location.reload();

@@ -78,7 +78,9 @@ export default function SignupForm() {
     setLoading(true);
     const form = e.currentTarget;
     const newErrors = findFormErrors();
-    if (form.checkValidity() === false || Object.keys(newErrors).length > 0) {
+    if (form.checkValidity() === false) {
+      e.stopPropagation();
+    } else if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       e.stopPropagation();
     } else {
@@ -90,21 +92,29 @@ export default function SignupForm() {
           username: user_name,
           password: password,
         };
-        const signupResponse = await fetch("https://z-prefix-stage-3-api.herokuapp.com/api/signup", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        });
+        const signupResponse = await fetch(
+          "https://z-prefix-stage-3-api.herokuapp.com/api/signup",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          }
+        );
         if (!signupResponse.ok) setServerError(signupResponse.statusText);
-        const loginResponse = await fetch("https://z-prefix-stage-3-api.herokuapp.com/api/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            username: user_name,
-            password: password,
-          }),
-        });
-        const { username, user_id, accessToken } = await loginResponse.json();
+        const loginResponse = await fetch(
+          "https://z-prefix-stage-3-api.herokuapp.com/api/login",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              username: user_name,
+              password: password,
+            }),
+          }
+        );
+        const { username, user_id, accessToken } = signupResponse.ok
+          ? await loginResponse.json()
+          : { username: null, user_id: null, accessToken: null };
         if (signupResponse.ok && !loginResponse.ok)
           setServerError(loginResponse.statusText);
         if (accessToken) {

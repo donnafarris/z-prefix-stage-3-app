@@ -48,11 +48,14 @@ export default function LoginForm() {
       setValid(true);
       try {
         const body = { username: user_name, password: password };
-        const response = await fetch("https://z-prefix-stage-3-api.herokuapp.com/api/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        });
+        const response = await fetch(
+          "https://z-prefix-stage-3-api.herokuapp.com/api/login",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          }
+        );
         if (!response.ok) {
           setValid(false);
           setServerError(response.statusText);

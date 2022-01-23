@@ -26,7 +26,8 @@ export default function NewPostForm() {
     let newErrors = {};
     // title errors
     if (!titleF || titleF === "") newErrors.titleF = "Posts must have a title.";
-    if (titleF.length > 200) newErrors.titleF = "The title cannot exceed 200 characters";
+    if (titleF.length > 200)
+      newErrors.titleF = "The title cannot exceed 200 characters";
     // content errors
     if (!contentF || contentF === "")
       newErrors.contentF = "Posts must have content.";
@@ -46,16 +47,19 @@ export default function NewPostForm() {
       setValid(true);
       try {
         const body = { title: titleF, content: contentF };
-        const response = await fetch("https://z-prefix-stage-3-api.herokuapp.com/api/posts", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${
-              JSON.parse(localStorage.getItem("user")).accessToken
-            }`,
-          },
-          body: JSON.stringify(body),
-        });
+        const response = await fetch(
+          "https://z-prefix-stage-3-api.herokuapp.com/api/posts",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${
+                JSON.parse(localStorage.getItem("user")).accessToken
+              }`,
+            },
+            body: JSON.stringify(body),
+          }
+        );
         if (!response.ok) {
           setValid(false);
           setServerError(response.statusText);
