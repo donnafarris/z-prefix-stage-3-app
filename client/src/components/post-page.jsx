@@ -175,7 +175,7 @@ const PostPage = () => {
   };
 
   return (
-    <Container fluid>
+    <Container fluid className="mt-2 mb-5"> 
       <Row style={{ backgroundColor: "gainsboro" }}>
         <Col md="auto" style={{ height: "53px" }} />
       </Row>
@@ -273,7 +273,7 @@ const PostPage = () => {
                   )}
                   {readonly ? (
                     <Form.Group
-                      className="mb-3 ms-2 pe-none ps-1"
+                      className="mb-3 ms-2 ps-1"
                       controlId="readonlyContentText"
                       aria-disabled="true"
                     >
