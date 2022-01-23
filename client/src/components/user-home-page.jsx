@@ -19,7 +19,7 @@ const UserHomePage = () => {
   useEffect(() => {
     const getBlogger = async () => {
       try {
-        const response = await fetch("https://z-prefix-stage-3.herokuapp.com/api/users");
+        const response = await fetch("https://z-prefix-stage-3-api.herokuapp.com/api/users");
         const jsonData = await response.json();
         const data = jsonData.filter((user) => {
           return user.username === username;
@@ -36,7 +36,7 @@ const UserHomePage = () => {
   useEffect(() => {
     const getPosts = async () => {
       try {
-        const response = await fetch("https://z-prefix-stage-3.herokuapp.com/api/posts");
+        const response = await fetch("https://z-prefix-stage-3-api.herokuapp.com/api/posts");
         const jsonData = await response.json();
         const data = jsonData.filter((post) => {
           return post.username === blogger.username;

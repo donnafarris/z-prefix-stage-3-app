@@ -44,7 +44,7 @@ const PostPage = () => {
   useEffect(() => {
     const getPost = async () => {
       try {
-        await fetch(`https://z-prefix-stage-3.herokuapp.com/api/posts/${id}`)
+        await fetch(`https://z-prefix-stage-3-api.herokuapp.com/api/posts/${id}`)
           .then((resp) => resp.json())
           .then((data) => {
             const textRowCount = data["content"].split(".").length;
@@ -123,7 +123,7 @@ const PostPage = () => {
     setLoading(true);
     setShowModal(false);
     try {
-      const response = await fetch(`https://z-prefix-stage-3.herokuapp.com/api/posts/${id}`, {
+      const response = await fetch(`https://z-prefix-stage-3-api.herokuapp.com/api/posts/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${
@@ -156,7 +156,7 @@ const PostPage = () => {
       setValid(true);
       try {
         const body = { title: newTitle, content: newContent };
-        const response = await fetch(`https://z-prefix-stage-3.herokuapp.com/api/posts/${id}`, {
+        const response = await fetch(`https://z-prefix-stage-3-api.herokuapp.com/api/posts/${id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
