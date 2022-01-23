@@ -83,4 +83,4 @@ Dockerfile
 .dockerignore
 
 # Old database
-server/database/
+database/
