@@ -9,11 +9,10 @@ const jwt = require("jsonwebtoken");
 
 const { Pool } = require("pg");
 const pool = new Pool({
-  user: "admin",
-  host: "database",
-  database: "z-prefix",
-  password: "admin",
-  port: 5432,
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 app.use(bodyParser.json());
@@ -32,11 +31,6 @@ pool.on("error", (err, client) => {
 /*
 Endpoints
 */
-
-// GET
-app.get("/", (req, res) => {
-  res.send("Hello, this is the home page.");
-});
 
 // POST | INSERT
 // Create a User
@@ -230,5 +224,5 @@ function authenticateToken(req, res, next) {
 }
 
 app.listen(port, () =>
-  console.log(`CRUD Test API listening at http://localhost:${port}`)
+  console.log(`App is running on ${port}`)
 );
