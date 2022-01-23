@@ -252,7 +252,7 @@ const PostPage = () => {
                 <Col xs={10}>
                   {readonly ? (
                     <Form.Group
-                      className="mb-3 ms-2 pe-none ps-1"
+                      className="mb-3 ms-2 ps-1"
                       controlId="readonlyTitleText"
                       aria-disabled="true"
                     >
