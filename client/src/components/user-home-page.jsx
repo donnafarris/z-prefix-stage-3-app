@@ -69,15 +69,16 @@ const UserHomePage = () => {
           <h4 className="display-6">{username}'s Blog</h4>
         </Col>
       </Row>
+      {posts.length === 0 && (
+        <Col md="auto">There aren't any posts here yet. Please create one.</Col>
+      )}
       <Row xs={1} md={2} className="g-4 mt-2 px-4">
-        {posts.length === 0 && (
-          <Col md="auto">
-            There aren't any posts here yet. Please create one.
-          </Col>
-        )}
         {posts.map((post) => (
           <Col key={`postid${post.post_id}${post.username}`}>
-            <Card style={{ minWidth: "min-content" }} className="m-2">
+            <Card
+              style={{ minWidth: "min-content" }}
+              className="m-2"
+            >
               <Card.Header>
                 <Card.Title>
                   {post.title.length > 100
@@ -85,21 +86,21 @@ const UserHomePage = () => {
                     : post.title}
                 </Card.Title>
               </Card.Header>
-              <Card.Text className="p-3">
+              <Card.Body>
                 {post.content.length > 100
                   ? post.content.substr(0, 102) + "..."
                   : post.content}
-              </Card.Text>
+              </Card.Body>
               <Card.Footer>
-                <Row className="d-flex">
-                  <Col md="auto">
+                <Row xs={3}>
+                  <Col xs="auto">
                     <div>
                       Author:{" "}
                       <a href={`/blog/${post.username}`}>{post.username}</a>
                     </div>
                   </Col>
-                  <Col>{"Created:  " + dateFunc(post.creation_date)}</Col>
-                  <Col md="auto">
+                  <Col className="flex-grow-1">{"Created:  " + dateFunc(post.creation_date)}</Col>
+                  <Col xs="auto">
                     <OverlayTrigger
                       placement="top"
                       delay={{ show: 250, hide: 400 }}
