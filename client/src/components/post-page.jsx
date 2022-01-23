@@ -139,7 +139,6 @@ const PostPage = () => {
       console.error(err.message);
     }
     setLoading(false);
-    console.log("This does nothing right now but soon it will delete posts.");
   };
 
   const handleSubmit = async (e) => {
