@@ -15,7 +15,7 @@ import { BsBoxArrowUpRight } from "react-icons/bs";
 const UserHomePage = () => {
   const { username } = useParams();
   const [currentUser, setCurrentUser] = useState(undefined);
-  const [users, setUsers] = useState([]);
+  const [blogger, setBlogger] = useState({});
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
@@ -23,32 +23,38 @@ const UserHomePage = () => {
     if (user) {
       setCurrentUser(user);
     }
-  }, []);
-
-  const getPosts = async () => {
-    try {
-      const response = await fetch(`http://localhost:3001/posts`);
-      const jsonData = await response.json();
-      setPosts(jsonData);
-    } catch (err) {
-      console.error(err.message);
-    }
-  };
-
-  const getUsers = async () => {
-    try {
-      const response = await fetch("http://localhost:3001/users");
-      const jsonData = await response.json();
-      setUsers(jsonData);
-    } catch (err) {
-      console.error(err.message);
-    }
-  };
+    const getBlogger = async () => {
+      try {
+        const response = await fetch("http://localhost:3001/users");
+        const jsonData = await response.json();
+        const data = jsonData.filter((user) => {
+          return user.username === username;
+        });
+        // console.log("Fetch users data: " + JSON.stringify(data[0]))
+        setBlogger(data[0]);
+      } catch (err) {
+        console.error(err.message);
+      }
+    };
+    getBlogger();
+  }, [username, setBlogger, setCurrentUser]);
 
   useEffect(() => {
-    getUsers();
+    const getPosts = async () => {
+      try {
+        const response = await fetch("http://localhost:3001/posts");
+        const jsonData = await response.json();
+        const data = jsonData.filter((post) => {
+          return post.username === blogger.username;
+        });
+        // console.log("Fetch posts data: " + data);
+        setPosts(data);
+      } catch (err) {
+        console.error(err.message);
+      }
+    };
     getPosts();
-  }, []);
+  }, [blogger]);
 
   const dateFunc = (dateString) => {
     return new Intl.DateTimeFormat("en-US", {
@@ -70,13 +76,6 @@ const UserHomePage = () => {
         </Col>
       </Row>
       <Row xs={1} md={2} className="g-4 mt-2 px-4">
-        {posts.length === 0 ? (
-          <Col md="auto">
-            There aren't any posts here yet. Please create one.
-          </Col>
-        ) : (
-          ""
-        )}
         {posts.map((post) => (
           <Col key={`postid${post.post_id}${post.username}`}>
             <Card style={{ minWidth: "min-content" }} className="m-2">
