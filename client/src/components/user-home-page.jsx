@@ -70,6 +70,11 @@ const UserHomePage = () => {
         </Col>
       </Row>
       <Row xs={1} md={2} className="g-4 mt-2 px-4">
+        {posts.length === 0 && (
+          <Col md="auto">
+            There aren't any posts here yet. Please create one.
+          </Col>
+        )}
         {posts.map((post) => (
           <Col key={`postid${post.post_id}${post.username}`}>
             <Card style={{ minWidth: "min-content" }} className="m-2">
