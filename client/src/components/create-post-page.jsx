@@ -23,9 +23,10 @@ export default function NewPostForm() {
   };
 
   const findFormErrors = () => {
-    const newErrors = {};
+    let newErrors = {};
     // title errors
     if (!titleF || titleF === "") newErrors.titleF = "Posts must have a title.";
+    if (titleF.length > 200) newErrors.titleF = "The title cannot exceed 200 characters";
     // content errors
     if (!contentF || contentF === "")
       newErrors.contentF = "Posts must have content.";

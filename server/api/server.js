@@ -81,34 +81,14 @@ app.get("/users", (req, res) => {
     );
 });
 
-// // GET | SELECT (WILL NOT WORK BECAUSE :USER_NAME ISN'T AN INTEGER)
-// // Get a User by Username
-// app.get("/users/:user_name", authenticateToken, (req, res) => {
-//   const { user_name } = req.params;
-//   if (req.user.username == "Admin" || req.user.username == user_name) {
-//     pool.query(
-//       "SELECT First_Name, Last_Name, Username FROM Users WHERE Username = $1",
-//       [user_name],
-//       (error, results) => {
-//         if (error) {
-//           res.send({ message: error.message });
-//         }
-//         res.status(200).json(results.rows[0]);
-//       }
-//     );
-//   } else {
-//     res.status(403).send();
-//   }
-// });
-
+// GET | SELECT
+// Get all Posts
 const getPosts = (callback) => {
   pool.query(
     "SELECT Posts.Post_ID, Posts.Creation_Date, Posts.Title, Posts.Content, Users.Username, Users.First_Name, Users.Last_Name FROM Posts INNER JOIN Users ON Posts.Author = Users.User_ID",
     callback
   );
 };
-// GET | SELECT
-// Get all Posts
 app.get("/posts", (req, res) => {
   getPosts((error, results) => {
     if (error) {
@@ -133,37 +113,6 @@ app.get("/posts/:id", (req, res) => {
     }
   );
 });
-
-// GET | SELECT
-// Get all Posts by Current User
-app.get("/my-posts", authenticateToken, (req, res) => {
-  pool.query(
-    "SELECT Posts.Post_ID, Posts.Creation_Date, Posts.Title, Posts.Content, Users.Username, Users.First_Name, Users.Last_Name FROM Posts INNER JOIN Users ON Posts.Author = Users.User_ID WHERE Users.Username = $1",
-    [req.user.username],
-    (error, results) => {
-      if (error) {
-        res.send({ message: error.message });
-      }
-      res.status(200).json(results.rows);
-    }
-  );
-});
-
-// // GET | SELECT (WILL NOT WORK BECAUSE :USERNAME ISN'T AN INTEGER)
-// // Get all Posts by a User
-// app.get("/:username/posts", (req, res) => {
-//   const user_name = req.params.username;
-//   pool.query(
-//     "SELECT Posts.Post_ID, Posts.Creation_Date, Posts.Title, Posts.Content, Users.Username, Users.First_Name, Users.Last_Name FROM Posts INNER JOIN Users ON Posts.Author = Users.User_ID",
-//     [user_name],
-//     (error, results) => {
-//       if (error) {
-//         res.send({ message: error.message });
-//       }
-//       res.status(200).json(results.rows);
-//     }
-//   );
-// });
 
 // POST | INSERT
 // Create a Post

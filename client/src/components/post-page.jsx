@@ -51,8 +51,8 @@ const PostPage = () => {
             const rows = textRowCount + 2;
             setTextRows(rows);
             setPost(data);
-            setNewTitle(data.title); 
-            setNewContent(data.content); 
+            setNewTitle(data.title);
+            setNewContent(data.content);
           });
       } catch (err) {
         console.error(err.message);
@@ -81,10 +81,13 @@ const PostPage = () => {
   };
 
   const findFormErrors = () => {
-    const newErrors = {};
+    let newErrors = {};
     // title errors
     if (!newTitle || newTitle === "" || !post.title || post.title === "")
       newErrors.newTitle = "Posts must have a title.";
+    if (newTitle.length > 200)
+      newErrors.newTitle = "The title cannot exceed 200 characters";
+
     // content errors
     if (
       !newContent ||
@@ -175,7 +178,7 @@ const PostPage = () => {
   };
 
   return (
-    <Container fluid className="mt-2 mb-5"> 
+    <Container fluid className="mb-5">
       <Row style={{ backgroundColor: "gainsboro" }}>
         <Col md="auto" style={{ height: "53px" }} />
       </Row>
@@ -269,6 +272,9 @@ const PostPage = () => {
                         onChange={onChangeTitle}
                         isInvalid={!!errors.newTitle}
                       ></Form.Control>
+                      <Form.Control.Feedback type="invalid">
+                        {errors.newTitle}
+                      </Form.Control.Feedback>
                     </Form.Group>
                   )}
                   {readonly ? (
@@ -299,6 +305,9 @@ const PostPage = () => {
                         onChange={onChangeContent}
                         isInvalid={!!errors.newContent}
                       ></Form.Control>
+                      <Form.Control.Feedback type="invalid">
+                        {errors.newContent}
+                      </Form.Control.Feedback>
                     </Form.Group>
                   )}
                 </Col>
