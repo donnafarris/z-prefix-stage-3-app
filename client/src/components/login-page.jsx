@@ -48,7 +48,7 @@ export default function LoginForm() {
       setValid(true);
       try {
         const body = { username: user_name, password: password };
-        const response = await fetch("http://localhost:3001/login", {
+        const response = await fetch("https://z-prefix-stage-3.herokuapp.com/api/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),

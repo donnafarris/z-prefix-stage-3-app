@@ -4,7 +4,7 @@ const app = express();
 const bodyParser = require("body-parser");
 let port = process.env.PORT;
 if (port == null || port == "") {
-  port = 3001; //8000;
+  port = 3001;;
 }
 const cors = require("cors");
 const bcrypt = require("bcrypt");
@@ -40,13 +40,13 @@ pool.on("error", (err, client) => {
 Endpoints
 */
 
-app.get("/", (req, res) => {
+app.get("/api", (req, res) => {
   res.send("API is running.")
 })
 
 // POST | INSERT
 // Create a User
-app.post("/signup", async (req, res) => {
+app.post("/api/signup", async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     pool.query(
@@ -75,7 +75,7 @@ app.post("/signup", async (req, res) => {
 
 // GET | SELECT
 // Get all Users
-app.get("/users", (req, res) => {
+app.get("/api/users", (req, res) => {
   pool.query(
     "SELECT User_ID, First_Name, Last_Name, Username FROM Users",
     (error, results) => {
@@ -95,7 +95,7 @@ const getPosts = (callback) => {
     callback
   );
 };
-app.get("/posts", (req, res) => {
+app.get("/api/posts", (req, res) => {
   getPosts((error, results) => {
     if (error) {
       console.error(error.message);
@@ -106,7 +106,7 @@ app.get("/posts", (req, res) => {
 
 // GET | SELECT
 // Get a Post by ID
-app.get("/posts/:id", (req, res) => {
+app.get("/api/posts/:id", (req, res) => {
   const post_id = req.params.id;
   pool.query(
     "SELECT Posts.Post_ID, Posts.Creation_Date, Posts.Title, Posts.Content, Users.Username, Users.First_Name, Users.Last_Name FROM Posts INNER JOIN Users ON Posts.Author = Users.User_ID WHERE Posts.Post_ID = $1",
@@ -122,7 +122,7 @@ app.get("/posts/:id", (req, res) => {
 
 // POST | INSERT
 // Create a Post
-app.post("/posts", authenticateToken, async (req, res) => {
+app.post("/api/posts", authenticateToken, async (req, res) => {
   try {
     const { rows } = await pool.query(
       "SELECT * FROM Users WHERE Username = $1",
@@ -154,7 +154,7 @@ app.post("/posts", authenticateToken, async (req, res) => {
 
 // PUT | UPDATE
 // Update a Post
-app.put("/posts/:id", authenticateToken, async (req, res) => {
+app.put("/api/posts/:id", authenticateToken, async (req, res) => {
   const { rows } = await pool.query("SELECT * FROM Users WHERE Username = $1", [
     req.user.username,
   ]);
@@ -173,7 +173,7 @@ app.put("/posts/:id", authenticateToken, async (req, res) => {
 
 // POST | DELETE
 // Delete a Post
-app.delete("/posts/:id", authenticateToken, async (req, res) => {
+app.delete("/api/posts/:id", authenticateToken, async (req, res) => {
   const { rows } = await pool.query("SELECT * FROM Users WHERE Username = $1", [
     req.user.username,
   ]);
@@ -191,7 +191,7 @@ app.delete("/posts/:id", authenticateToken, async (req, res) => {
 });
 
 // Authentication
-app.post("/login", async (req, res) => {
+app.post("/api/login", async (req, res) => {
   try {
     const { rows } = await pool.query(
       "SELECT Username, Password, User_ID FROM Users WHERE Username = $1",

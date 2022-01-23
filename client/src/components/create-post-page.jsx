@@ -46,7 +46,7 @@ export default function NewPostForm() {
       setValid(true);
       try {
         const body = { title: titleF, content: contentF };
-        const response = await fetch("http://localhost:3001/posts", {
+        const response = await fetch("https://z-prefix-stage-3.herokuapp.com/api/posts", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

@@ -90,13 +90,13 @@ export default function SignupForm() {
           username: user_name,
           password: password,
         };
-        const signupResponse = await fetch("http://localhost:3001/signup", {
+        const signupResponse = await fetch("https://z-prefix-stage-3.herokuapp.com/api/signup", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
         });
         if (!signupResponse.ok) setServerError(signupResponse.statusText);
-        const loginResponse = await fetch("http://localhost:3001/login", {
+        const loginResponse = await fetch("https://z-prefix-stage-3.herokuapp.com/api/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

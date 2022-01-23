@@ -15,7 +15,7 @@ const HomePage = () => {
 
   const getPosts = async () => {
     try {
-      const response = await fetch("http://localhost:3001/posts");
+      const response = await fetch("https://z-prefix-stage-3.herokuapp.com/api/posts");
       const jsonData = await response.json();
       setPosts(jsonData);
     } catch (err) {
