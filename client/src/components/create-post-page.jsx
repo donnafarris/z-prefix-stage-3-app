@@ -1,13 +1,6 @@
 import React, { useState } from "react";
 import { createBrowserHistory } from "history";
-import {
-  Alert,
-  Button,
-  Container,
-  Row,
-  Col,
-  Form,
-} from "react-bootstrap";
+import { Alert, Button, Container, Row, Col, Form } from "react-bootstrap";
 
 const history = createBrowserHistory();
 
@@ -62,7 +55,10 @@ export default function NewPostForm() {
           },
           body: JSON.stringify(body),
         });
-        if (!response.ok) setServerError(response.statusText);
+        if (!response.ok) {
+          setValid(false);
+          setServerError(response.statusText);
+        }
         if (response.ok) {
           history.push(
             `/blog/${JSON.parse(localStorage.getItem("user")).username}`
@@ -85,6 +81,7 @@ export default function NewPostForm() {
       </Row>
       {serverError && (
         <Alert
+          className="mt-2"
           variant="danger"
           onClose={() => setServerError(undefined)}
           dismissible
@@ -93,49 +90,53 @@ export default function NewPostForm() {
           <p>{serverError}</p>
         </Alert>
       )}
-      <Form
-        noValidate
-        validated={valid}
-        onSubmit={handleSubmit}
-        className="g-4 mt-2 px-4"
-      >
-        <Form.Group className="mb-3" controlId="titleText">
-          <Form.Label label="Title"></Form.Label>
-          <Form.Control
-            required
-            size="lg"
-            type="text"
-            placeholder="Title"
-            name="titleTextarea"
-            value={titleF}
-            onChange={onChangeTitleF}
-            isInvalid={!!errors.titleF}
-          />
-          <Form.Control.Feedback type="invalid">
-            {errors.titleF}
-          </Form.Control.Feedback>
-        </Form.Group>
-        <Form.Group className="mb-3" controlId="contentTextarea">
-          <Form.Label label="Content"></Form.Label>
-          <Form.Control
-            required
-            className="form-field"
-            as="textarea"
-            placeholder="Content"
-            name="contentTextarea"
-            value={contentF}
-            onChange={onChangecontentF}
-            isInvalid={!!errors.contentF}
-            style={{ height: "100px" }}
-          />
-          <Form.Control.Feedback type="invalid">
-            {errors.contentF}
-          </Form.Control.Feedback>
-        </Form.Group>
-        <Button type="submit" variant="dark" disabled={loading}>
-          {loading ? "Loading" : "Submit"}
-        </Button>
-      </Form>
+      <Row>
+        <Col xs={10}>
+          <Form
+            noValidate
+            validated={valid}
+            onSubmit={handleSubmit}
+            className="g-4 mt-2 px-4"
+          >
+            <Form.Group className="mb-3" controlId="titleText">
+              <Form.Label label="Title"></Form.Label>
+              <Form.Control
+                required
+                size="lg"
+                type="text"
+                placeholder="Title"
+                name="titleTextarea"
+                value={titleF}
+                onChange={onChangeTitleF}
+                isInvalid={!!errors.titleF}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.titleF}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="contentTextarea">
+              <Form.Label label="Content"></Form.Label>
+              <Form.Control
+                required
+                className="form-field"
+                as="textarea"
+                placeholder="Content"
+                name="contentTextarea"
+                value={contentF}
+                onChange={onChangecontentF}
+                isInvalid={!!errors.contentF}
+                style={{ height: "100px" }}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.contentF}
+              </Form.Control.Feedback>
+            </Form.Group>
+            <Button type="submit" variant="dark" disabled={loading}>
+              {loading ? "Loading" : "Submit"}
+            </Button>
+          </Form>
+        </Col>
+      </Row>
     </Container>
   );
 }

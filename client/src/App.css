@@ -47,3 +47,22 @@
   height: 20px;
   background-color: rgb(247, 12, 12, 0.5);
 }
+
+.dropdown-toggle::after {
+  display: none;
+}
+
+.btn.btn-outline-dark {
+  border-color: transparent;
+  background-color: transparent;
+  color: inherit
+}
+
+.dropdown-toggle.btn.btn-outline-dark.btn-sm {
+  border-color: transparent;
+}
+
+.dropdown-toggle.btn.btn-outline-dark:hover {
+  background-color: transparent;
+  color: inherit
+}

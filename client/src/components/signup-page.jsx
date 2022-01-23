@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { createBrowserHistory } from "history";
-import { Alert, Button, Form } from "react-bootstrap";
+import { Alert, Button, Container, Row, Col, Form } from "react-bootstrap";
 
 const history = createBrowserHistory();
 
@@ -104,13 +104,13 @@ export default function SignupForm() {
             password: password,
           }),
         });
-        const { username, accessToken } = await loginResponse.json();
+        const { username, user_id, accessToken } = await loginResponse.json();
         if (signupResponse.ok && !loginResponse.ok)
           setServerError(loginResponse.statusText);
         if (accessToken) {
           localStorage.setItem(
             "user",
-            JSON.stringify({ username, accessToken })
+            JSON.stringify({ username, user_id, accessToken })
           );
           history.push(`/blog/${user_name}`);
           window.location.reload();
@@ -123,9 +123,15 @@ export default function SignupForm() {
   };
 
   return (
-    <>
+    <Container fluid>
+      <Row style={{ backgroundColor: "gainsboro" }}>
+        <Col md="auto">
+          <h4 className="display-6">Sign Up</h4>
+        </Col>
+      </Row>
       {serverError && (
         <Alert
+          className="mt-2"
           variant="danger"
           onClose={() => setServerError(undefined)}
           dismissible
@@ -134,102 +140,120 @@ export default function SignupForm() {
           <p>{serverError}</p>
         </Alert>
       )}
-      <Form noValidate validated={valid} onSubmit={handleSubmit}>
-        <Form.Group>
-          <Form.Label htmlFor="firstName">First Name</Form.Label>
-          <Form.Control
-            required
-            id="first-name"
-            className="form-field"
-            type="text"
-            placeholder="First Name"
-            name="firstName"
-            value={firstname}
-            onChange={onChangeFirstname}
-            isInvalid={!!errors.firstname}
-          />
-          <Form.Control.Feedback type="invalid">
-            {errors.firstname}
-          </Form.Control.Feedback>
-        </Form.Group>
-        <Form.Group>
-          <Form.Label htmlFor="lastName">Last Name</Form.Label>
-          <Form.Control
-            required
-            id="last-name"
-            className="form-field"
-            type="text"
-            placeholder="Last Name"
-            name="lastName"
-            value={lastname}
-            onChange={onChangeLastname}
-            isInvalid={!!errors.lastname}
-          />
-          <Form.Control.Feedback type="invalid">
-            {errors.lastname}
-          </Form.Control.Feedback>
-        </Form.Group>
-        <Form.Group>
-          <Form.Label htmlFor="userName">Username</Form.Label>
-          <Form.Control
-            required
-            minLength={3}
-            maxLength={20}
-            id="user-name"
-            className="form-field"
-            type="text"
-            placeholder="Username"
-            name="userName"
-            value={user_name}
-            onChange={onChangeUser_name}
-            isInvalid={!!errors.user_name}
-          />
-          <Form.Control.Feedback type="invalid">
-            {errors.user_name}
-          </Form.Control.Feedback>
-        </Form.Group>
-        <Form.Group>
-          <Form.Label htmlFor="passWord">Password</Form.Label>
-          <Form.Control
-            required
-            minLength={6}
-            maxLength={40}
-            id="pass-word"
-            className="form-field"
-            type="password"
-            placeholder="Password"
-            name="passWord"
-            autoComplete="on"
-            value={password}
-            onChange={onChangePassword}
-            isInvalid={!!errors.password}
-          />
-          <Form.Control.Feedback type="invalid">
-            {errors.password}
-          </Form.Control.Feedback>
-        </Form.Group>
-        <Form.Group>
-          <Form.Label htmlFor="confirmPassWord">Confirm Password</Form.Label>
-          <Form.Control
-            required
-            id="confirm-pass-word"
-            className="form-field"
-            type="password"
-            placeholder="Confirm Password"
-            name="confirmPassWord"
-            autoComplete="on"
-            value={confirm_password}
-            onChange={onChangeConfirm_Password}
-            isInvalid={!!errors.confirm_password}
-          />
-          <Form.Control.Feedback type="invalid">
-            {errors.confirm_password}
-          </Form.Control.Feedback>
-        </Form.Group>
+      <Form
+        noValidate
+        validated={valid}
+        onSubmit={handleSubmit}
+        className="g-4 mt-2 px-4"
+      >
+        <Row>
+          <Col>
+            <Form.Group className="mb-3">
+              <Form.Label htmlFor="firstName">First Name</Form.Label>
+              <Form.Control
+                required
+                id="first-name"
+                type="text"
+                placeholder="First Name"
+                name="firstName"
+                value={firstname}
+                onChange={onChangeFirstname}
+                isInvalid={!!errors.firstname}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.firstname}
+              </Form.Control.Feedback>
+            </Form.Group>
+          </Col>
+          <Col>
+            <Form.Group className="mb-3">
+              <Form.Label htmlFor="lastName">Last Name</Form.Label>
+              <Form.Control
+                required
+                id="last-name"
+                type="text"
+                placeholder="Last Name"
+                name="lastName"
+                value={lastname}
+                onChange={onChangeLastname}
+                isInvalid={!!errors.lastname}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.lastname}
+              </Form.Control.Feedback>
+            </Form.Group>
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={6}>
+            <Form.Group className="mb-3">
+              <Form.Label htmlFor="userName">Username</Form.Label>
+              <Form.Control
+                required
+                minLength={3}
+                maxLength={20}
+                id="user-name"
+                type="text"
+                placeholder="Username"
+                name="userName"
+                value={user_name}
+                onChange={onChangeUser_name}
+                isInvalid={!!errors.user_name}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.user_name}
+              </Form.Control.Feedback>
+            </Form.Group>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Form.Group className="mb-3">
+              <Form.Label htmlFor="passWord">Password</Form.Label>
+              <Form.Control
+                required
+                minLength={6}
+                maxLength={40}
+                id="pass-word"
+                type="password"
+                placeholder="Password"
+                name="passWord"
+                autoComplete="on"
+                value={password}
+                onChange={onChangePassword}
+                isInvalid={!!errors.password}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.password}
+              </Form.Control.Feedback>
+            </Form.Group>
+          </Col>
+          <Col>
+            <Form.Group className="mb-3">
+              <Form.Label htmlFor="confirmPassWord">
+                Confirm Password
+              </Form.Label>
+              <Form.Control
+                required
+                id="confirm-pass-word"
+                type="password"
+                placeholder="Confirm Password"
+                name="confirmPassWord"
+                autoComplete="on"
+                value={confirm_password}
+                onChange={onChangeConfirm_Password}
+                isInvalid={!!errors.confirm_password}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.confirm_password}
+              </Form.Control.Feedback>
+            </Form.Group>
+          </Col>
+        </Row>
         <Button type="submit" variant="dark" disabled={loading}>
           {loading ? "Loading" : "Sign Up"}
         </Button>
       </Form>
-    </>
+    </Container>
   );
 }

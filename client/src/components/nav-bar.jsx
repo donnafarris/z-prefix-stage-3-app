@@ -29,7 +29,7 @@ const NavBar = () => {
   loggedIn ? (tabLinks = links.default) : (tabLinks = links.default2);
 
   return (
-    <Navbar bg="light" expand="lg">
+    <Navbar bg="light" expand="sm">
       <Container fluid>
         <Navbar.Brand href="/">
           <img
@@ -39,7 +39,7 @@ const NavBar = () => {
           />
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
+        <Navbar.Collapse className="justify-content-end" id="basic-navbar-nav">
           <Nav className="container-fluid">
             {tabLinks.map((link) => {
               return (
@@ -64,7 +64,10 @@ const NavBar = () => {
           <Nav className="container-fluid justify-content-end">
             {buttonLinks.map((link) => {
               return (
-                <Button className="m-1" variant="dark"
+                <Button
+                  className="m-1 ms-0"
+                  variant="dark"
+                  style={{ width: "fit-content" }}
                   key={link.href}
                   onClick={() => {
                     if (link.href === "logout") {

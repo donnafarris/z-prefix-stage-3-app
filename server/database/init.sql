@@ -22,4 +22,4 @@ CREATE TABLE Posts (
     Content TEXT,
     PRIMARY KEY (Post_ID),
     FOREIGN KEY (Author) REFERENCES Users (User_ID)
-)
+);

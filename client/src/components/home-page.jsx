@@ -1,5 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Container, Row, Col, Card, Button } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Tooltip,
+  OverlayTrigger,
+} from "react-bootstrap";
 import { BsBoxArrowUpRight } from "react-icons/bs";
 
 const HomePage = () => {
@@ -25,6 +33,12 @@ const HomePage = () => {
     }).format(new Date(dateString));
   };
 
+  const renderTooltip = (props) => (
+    <Tooltip id="button-tooltip" {...props}>
+      See Full Post
+    </Tooltip>
+  );
+
   return (
     <Container fluid>
       <Row style={{ backgroundColor: "gainsboro" }}>
@@ -33,15 +47,25 @@ const HomePage = () => {
         </Col>
       </Row>
       <Row xs={1} md={2} className="g-4 mt-2 px-4">
-        {posts.length === 0 && (<Col md="auto">There aren't any posts here yet. Please create one.</Col>)}
+        {posts.length === 0 && (
+          <Col md="auto">
+            There aren't any posts here yet. Please create one.
+          </Col>
+        )}
         {posts.map((post) => (
           <Col key={`postid${post.post_id}${post.username}`}>
-            <Card className="m-2">
+            <Card style={{ minWidth: "min-content" }} className="m-2">
               <Card.Header>
-                <Card.Title>{post.title}</Card.Title>
+                <Card.Title>
+                  {post.title.length > 100
+                    ? post.title.substr(0, 101) + "..."
+                    : post.title}
+                </Card.Title>
               </Card.Header>
               <Card.Text className="p-3">
-                {post.content.substr(0, 102) + "..."}
+                {post.content.length > 100
+                  ? post.content.substr(0, 101) + "..."
+                  : post.content}
               </Card.Text>
               <Card.Footer>
                 <Row className="d-flex">
@@ -53,13 +77,19 @@ const HomePage = () => {
                   </Col>
                   <Col>{"Created:  " + dateFunc(post.creation_date)}</Col>
                   <Col md="auto">
-                    <Button
-                      variant="outline-dark"
-                      style={{ border: "none" }}
-                      href={`/posts/${post.post_id}`}
+                    <OverlayTrigger
+                      placement="top"
+                      delay={{ show: 250, hide: 400 }}
+                      overlay={renderTooltip}
                     >
-                      <BsBoxArrowUpRight />
-                    </Button>
+                      <Button
+                        size="sm"
+                        variant="outline-dark"
+                        href={`/posts/${post.post_id}`}
+                      >
+                        <BsBoxArrowUpRight />
+                      </Button>
+                    </OverlayTrigger>
                   </Col>
                 </Row>
               </Card.Footer>

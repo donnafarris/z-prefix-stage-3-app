@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { createBrowserHistory } from "history";
-import { Alert, Button, Form } from "react-bootstrap";
+import { Alert, Button, Form, Container, Row, Col } from "react-bootstrap";
 
 const history = createBrowserHistory();
 
@@ -39,7 +39,9 @@ export default function LoginForm() {
     setLoading(true);
     const form = e.currentTarget;
     const newErrors = findFormErrors();
-    if (form.checkValidity() === false || Object.keys(newErrors).length > 0) {
+    if (form.checkValidity() === false) {
+      e.stopPropagation();
+    } else if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       e.stopPropagation();
     } else {
@@ -51,12 +53,17 @@ export default function LoginForm() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body),
         });
-        const { username, accessToken } = await response.json();
-        if (!response.ok) setServerError(response.statusText);
+        if (!response.ok) {
+          setValid(false);
+          setServerError(response.statusText);
+        }
+        const { username, user_id, accessToken } = response.ok
+          ? await response.json()
+          : { username: null, user_id: null, accessToken: null };
         if (accessToken) {
           localStorage.setItem(
             "user",
-            JSON.stringify({ username, accessToken })
+            JSON.stringify({ username, user_id, accessToken })
           );
           history.push(`/blog/${user_name}`);
           window.location.reload();
@@ -69,9 +76,15 @@ export default function LoginForm() {
   };
 
   return (
-    <>
+    <Container fluid>
+      <Row style={{ backgroundColor: "gainsboro" }}>
+        <Col md="auto">
+          <h4 className="display-6">Log In</h4>
+        </Col>
+      </Row>
       {serverError && (
         <Alert
+          className="mt-2"
           variant="danger"
           onClose={() => setServerError(undefined)}
           dismissible
@@ -80,46 +93,57 @@ export default function LoginForm() {
           <p>{serverError}</p>
         </Alert>
       )}
-      <Form noValidate validated={valid} onSubmit={handleSubmit}>
-        <Form.Group>
-          <Form.Label htmlFor="user_name">Username</Form.Label>
-          <Form.Control
-            required
-            id="user-name"
-            className="form-field"
-            type="text"
-            placeholder="Username"
-            name="user_name"
-            value={user_name}
-            onChange={onChangeuser_name}
-            isInvalid={!!errors.user_name}
-          />
-          <Form.Control.Feedback type="invalid">
-            {errors.user_name}
-          </Form.Control.Feedback>
-        </Form.Group>
-        <Form.Group>
-          <Form.Label htmlFor="passWord">Password</Form.Label>
-          <Form.Control
-            required
-            id="pass-word"
-            className="form-field"
-            type="password"
-            placeholder="Password"
-            name="passWord"
-            autoComplete="on"
-            value={password}
-            onChange={onChangePassword}
-            isInvalid={!!errors.password}
-          />
-          <Form.Control.Feedback type="invalid">
-            {errors.password}
-          </Form.Control.Feedback>
-        </Form.Group>
+      <Form
+        noValidate
+        validated={valid}
+        onSubmit={handleSubmit}
+        className="g-4 mt-2 px-4"
+      >
+        <Row>
+          <Col xs={6}>
+            <Form.Group className="mb-3">
+              <Form.Label htmlFor="user_name">Username</Form.Label>
+              <Form.Control
+                required
+                id="user-name"
+                type="text"
+                placeholder="Username"
+                name="user_name"
+                value={user_name}
+                onChange={onChangeuser_name}
+                isInvalid={!!errors.user_name}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.user_name}
+              </Form.Control.Feedback>
+            </Form.Group>
+          </Col>
+        </Row>
+        <Row>
+          <Col xs={6}>
+            <Form.Group className="mb-3">
+              <Form.Label htmlFor="passWord">Password</Form.Label>
+              <Form.Control
+                required
+                id="pass-word"
+                type="password"
+                placeholder="Password"
+                name="passWord"
+                autoComplete="on"
+                value={password}
+                onChange={onChangePassword}
+                isInvalid={!!errors.password}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.password}
+              </Form.Control.Feedback>
+            </Form.Group>
+          </Col>
+        </Row>
         <Button type="submit" variant="dark" disabled={loading}>
           {loading ? "Loading" : "Log In"}
         </Button>
       </Form>
-    </>
+    </Container>
   );
 }

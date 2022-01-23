@@ -69,8 +69,7 @@ app.post("/signup", async (req, res) => {
 
 // GET | SELECT
 // Get all Users
-app.get("/users", authenticateToken, (req, res) => {
-  if (req.user.username == "Admin") {
+app.get("/users", (req, res) => {
     pool.query(
       "SELECT User_ID, First_Name, Last_Name, Username FROM Users",
       (error, results) => {
@@ -80,43 +79,43 @@ app.get("/users", authenticateToken, (req, res) => {
         res.status(200).json(results.rows);
       }
     );
-  } else {
-    res.status(403).send();
-  }
 });
 
-// GET | SELECT
-// Get a User by Username
-app.get("/users/:user_name", authenticateToken, (req, res) => {
-  const { user_name } = req.params;
-  if (req.user.username == "Admin" || req.user.username == user_name) {
-    pool.query(
-      "SELECT First_Name, Last_Name, Username FROM Users WHERE Username = $1",
-      [user_name],
-      (error, results) => {
-        if (error) {
-          res.send({ message: error.message });
-        }
-        res.status(200).json(results.rows[0]);
-      }
-    );
-  } else {
-    res.status(403).send();
-  }
-});
+// // GET | SELECT (WILL NOT WORK BECAUSE :USER_NAME ISN'T AN INTEGER)
+// // Get a User by Username
+// app.get("/users/:user_name", authenticateToken, (req, res) => {
+//   const { user_name } = req.params;
+//   if (req.user.username == "Admin" || req.user.username == user_name) {
+//     pool.query(
+//       "SELECT First_Name, Last_Name, Username FROM Users WHERE Username = $1",
+//       [user_name],
+//       (error, results) => {
+//         if (error) {
+//           res.send({ message: error.message });
+//         }
+//         res.status(200).json(results.rows[0]);
+//       }
+//     );
+//   } else {
+//     res.status(403).send();
+//   }
+// });
 
+const getPosts = (callback) => {
+  pool.query(
+    "SELECT Posts.Post_ID, Posts.Creation_Date, Posts.Title, Posts.Content, Users.Username, Users.First_Name, Users.Last_Name FROM Posts INNER JOIN Users ON Posts.Author = Users.User_ID",
+    callback
+  );
+};
 // GET | SELECT
 // Get all Posts
 app.get("/posts", (req, res) => {
-  pool.query(
-    "SELECT Posts.Post_ID, Posts.Creation_Date, Posts.Title, Posts.Content, Users.Username, Users.First_Name, Users.Last_Name FROM Posts INNER JOIN Users ON Posts.Author = Users.User_ID",
-    (error, results) => {
-      if (error) {
-        res.send({ message: error.message });
-      }
-      res.status(200).json(results.rows);
+  getPosts((error, results) => {
+    if (error) {
+      console.error(error.message);
     }
-  );
+    res.status(200).json(results.rows);
+  });
 });
 
 // GET | SELECT
@@ -150,21 +149,21 @@ app.get("/my-posts", authenticateToken, (req, res) => {
   );
 });
 
-// GET | SELECT
-// Get all Posts by a User
-app.get("/:username/posts", (req, res) => {
-  const { user_name } = req.params;
-  pool.query(
-    "SELECT Posts.Post_ID, Posts.Creation_Date, Posts.Title, Posts.Content, Users.Username, Users.First_Name, Users.Last_Name FROM Posts INNER JOIN Users ON Posts.Author = Users.User_ID WHERE Users.Username = $1",
-    [user_name],
-    (error, results) => {
-      if (error) {
-        res.send({ message: error.message });
-      }
-      res.status(200).json(results.rows);
-    }
-  );
-});
+// // GET | SELECT (WILL NOT WORK BECAUSE :USERNAME ISN'T AN INTEGER)
+// // Get all Posts by a User
+// app.get("/:username/posts", (req, res) => {
+//   const user_name = req.params.username;
+//   pool.query(
+//     "SELECT Posts.Post_ID, Posts.Creation_Date, Posts.Title, Posts.Content, Users.Username, Users.First_Name, Users.Last_Name FROM Posts INNER JOIN Users ON Posts.Author = Users.User_ID",
+//     [user_name],
+//     (error, results) => {
+//       if (error) {
+//         res.send({ message: error.message });
+//       }
+//       res.status(200).json(results.rows);
+//     }
+//   );
+// });
 
 // POST | INSERT
 // Create a Post
@@ -194,7 +193,6 @@ app.post("/posts", authenticateToken, async (req, res) => {
       }
     );
   } catch (err) {
-    res.send({ message: error.message });
     console.error(err.message);
   }
 });
@@ -241,7 +239,7 @@ app.delete("/posts/:id", authenticateToken, async (req, res) => {
 app.post("/login", async (req, res) => {
   try {
     const { rows } = await pool.query(
-      "SELECT Username, Password FROM Users WHERE Username = $1",
+      "SELECT Username, Password, User_ID FROM Users WHERE Username = $1",
       [req.body.username]
     );
     const user = rows[0] && rows[0]["password"] ? rows[0] : null;
@@ -252,7 +250,11 @@ app.post("/login", async (req, res) => {
       const accessToken = generateAccessToken(user);
       res
         .status(200)
-        .send({ username: user["username"], accessToken: accessToken });
+        .send({
+          username: user["username"],
+          user_id: user["user_id"],
+          accessToken: accessToken,
+        });
     } else if (user == null) {
       res.status(404).send({ message: "User does not exist." });
     } else {
