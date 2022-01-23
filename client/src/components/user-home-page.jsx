@@ -13,15 +13,10 @@ import { BsBoxArrowUpRight } from "react-icons/bs";
 
 const UserHomePage = () => {
   const { username } = useParams();
-  const [currentUser, setCurrentUser] = useState(undefined);
   const [blogger, setBlogger] = useState({});
   const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (user) {
-      setCurrentUser(user);
-    }
     const getBlogger = async () => {
       try {
         const response = await fetch("http://localhost:3001/users");
@@ -36,7 +31,7 @@ const UserHomePage = () => {
       }
     };
     getBlogger();
-  }, [username, setBlogger, setCurrentUser]);
+  }, [username, setBlogger]);
 
   useEffect(() => {
     const getPosts = async () => {

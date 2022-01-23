@@ -41,26 +41,25 @@ const PostPage = () => {
     }
   }, []);
 
-  const getPost = async () => {
-    try {
-      await fetch(`http://localhost:3001/posts/${id}`)
-        .then((resp) => resp.json())
-        .then((data) => {
-          const textRowCount = data["content"].split(".").length;
-          const rows = textRowCount + 2;
-          setTextRows(rows);
-          setPost(data);
-          setNewTitle(data.title); //something about this is bringing up an error
-          setNewContent(data.content); //see C:\Users\dfarr\OneDrive\Documents\localhost-1642810503335 21JAN2022 1515PM.txt
-        });
-    } catch (err) {
-      console.error(err.message);
-    }
-  };
-
   useEffect(() => {
+    const getPost = async () => {
+      try {
+        await fetch(`http://localhost:3001/posts/${id}`)
+          .then((resp) => resp.json())
+          .then((data) => {
+            const textRowCount = data["content"].split(".").length;
+            const rows = textRowCount + 2;
+            setTextRows(rows);
+            setPost(data);
+            setNewTitle(data.title); 
+            setNewContent(data.content); 
+          });
+      } catch (err) {
+        console.error(err.message);
+      }
+    };
     getPost();
-  }, []);
+  }, [id, setTextRows, setPost, setNewTitle, setNewContent]);
 
   const onChangeTitle = (e) => {
     const title = e.target.value;
