@@ -76,3 +76,6 @@ dist
 
 # Old Client Folder
 ignore-client/
+
+# Old Docker files
+docker-compose.yml
