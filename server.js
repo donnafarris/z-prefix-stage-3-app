@@ -4,18 +4,23 @@ const app = express();
 const bodyParser = require("body-parser");
 let port = process.env.PORT;
 if (port == null || port == "") {
-  port = 8000;
+  port = 3001; //8000;
 }
-app.listen(port);const cors = require("cors");
+const cors = require("cors");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 const { Pool } = require("pg");
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  user: process.env.DATABASE_USER,
+  host: process.env.DATABASE_HOST,
+  database: process.env.DATABASE,
+  password: process.env.DATABASE_PASSWORD,
+  port: process.env.DATABASE_PORT,
+  connectionString: process.env.DATABASE_URI,
   ssl: {
-    rejectUnauthorized: false
-  }
+    rejectUnauthorized: false,
+  },
 });
 
 app.use(bodyParser.json());
@@ -34,6 +39,10 @@ pool.on("error", (err, client) => {
 /*
 Endpoints
 */
+
+app.get("/", (req, res) => {
+  res.send("API is running.")
+})
 
 // POST | INSERT
 // Create a User
@@ -67,15 +76,15 @@ app.post("/signup", async (req, res) => {
 // GET | SELECT
 // Get all Users
 app.get("/users", (req, res) => {
-    pool.query(
-      "SELECT User_ID, First_Name, Last_Name, Username FROM Users",
-      (error, results) => {
-        if (error) {
-          res.send({ message: error.message });
-        }
-        res.status(200).json(results.rows);
+  pool.query(
+    "SELECT User_ID, First_Name, Last_Name, Username FROM Users",
+    (error, results) => {
+      if (error) {
+        res.send({ message: error.message });
       }
-    );
+      res.status(200).json(results.rows);
+    }
+  );
 });
 
 // GET | SELECT
@@ -194,13 +203,11 @@ app.post("/login", async (req, res) => {
       (await bcrypt.compare(req.body.password, user["password"]))
     ) {
       const accessToken = generateAccessToken(user);
-      res
-        .status(200)
-        .send({
-          username: user["username"],
-          user_id: user["user_id"],
-          accessToken: accessToken,
-        });
+      res.status(200).send({
+        username: user["username"],
+        user_id: user["user_id"],
+        accessToken: accessToken,
+      });
     } else if (user == null) {
       res.status(404).send({ message: "User does not exist." });
     } else {
@@ -226,6 +233,4 @@ function authenticateToken(req, res, next) {
   });
 }
 
-app.listen(port, () =>
-  console.log(`App is running on ${port}`)
-);
+app.listen(port, () => console.log(`API is running on ${port}`));
