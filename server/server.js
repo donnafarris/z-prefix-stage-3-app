@@ -1,10 +1,11 @@
 require("dotenv").config();
 const express = require("express");
+const WebSocket = require("ws");
 const app = express();
 const bodyParser = require("body-parser");
 let port = process.env.PORT;
 if (port == null || port == "") {
-  port = 3001;;
+  port = 3001;
 }
 const cors = require("cors");
 const bcrypt = require("bcrypt");
@@ -41,8 +42,8 @@ Endpoints
 */
 
 app.get("/api", (req, res) => {
-  res.send("API is running.")
-})
+  res.send("API is running.");
+});
 
 // POST | INSERT
 // Create a User
@@ -233,4 +234,17 @@ function authenticateToken(req, res, next) {
   });
 }
 
-app.listen(port, () => console.log(`API is running on ${port}`));
+let server = app.listen(port, () => console.log(`API is running on ${port}`));
+
+const wss = new WebSocket.Server({ server });
+
+wss.on("connection", (ws) => {
+  console.log("Client connected");
+  ws.on("close", () => console.log("Client disconnected"));
+});
+
+setInterval(() => {
+  wss.clients.forEach((client) => {
+    client.send(new Date().toTimeString());
+  });
+}, 1000);
