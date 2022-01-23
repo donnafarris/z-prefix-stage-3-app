@@ -13,7 +13,6 @@ import {
   Card,
   Spinner,
 } from "react-bootstrap";
-import withAuth from "./auth-route";
 import { useParams } from "react-router-dom";
 import { BsThreeDotsVertical } from "react-icons/bs";
 
@@ -365,4 +364,4 @@ const PostPage = () => {
   );
 };
 
-export default withAuth(PostPage);
+export default PostPage;
