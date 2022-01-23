@@ -20,20 +20,8 @@ services:
     depends_on:
       - "database"
 
-  rootconfig:
-    build: client/root-config
-    ports:
-      - 8000:8000
-  
-  header:
-    build: client/header
-    ports:
-      - 8001:8001
-  
-  main:
-    build: client/main
-    ports:
-      - 8002:8002
+  client:
+    build: client
 
 volumes:
   z-prefix: {}
