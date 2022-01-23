@@ -9,7 +9,6 @@ import {
   Tooltip,
   OverlayTrigger,
 } from "react-bootstrap";
-import withAuth from "./auth-route";
 import { BsBoxArrowUpRight } from "react-icons/bs";
 
 const UserHomePage = () => {
@@ -125,4 +124,4 @@ const UserHomePage = () => {
   );
 };
 
-export default withAuth(UserHomePage);
+export default UserHomePage;
