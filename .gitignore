@@ -79,3 +79,5 @@ ignore-client/
 
 # Old Docker files
 docker-compose.yml
+Dockerfile
+.dockerignore
